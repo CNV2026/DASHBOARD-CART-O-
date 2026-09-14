@@ -223,9 +223,11 @@ footer{text-align:center;color:var(--muted);font-size:11.5px;margin-top:24px;lin
 }
 
 /* ================= ABA CONTAS EM ATRASO ================= */
-.aba.on[data-c="6"]{background:linear-gradient(135deg,#E2645A,#BE801E)}
-.bloco[data-c="6"] h3::before{background:linear-gradient(180deg,#E2645A,#BE801E)}
-.mrow.atraso{background:rgba(226,100,90,.07);border-color:rgba(226,100,90,.26)}
+.aba.on[data-c="6"]{background:linear-gradient(135deg,#F07F2D,#F5C518)}
+.aba.on[data-c="7"]{background:linear-gradient(135deg,#7B79D6,#49479D);color:#F2F1FF}
+.bloco[data-c="6"] h3::before{background:linear-gradient(180deg,#E24A3F,#F5C518)}
+.bloco[data-c="7"] h3::before{background:linear-gradient(180deg,#7B79D6,#49479D)}
+.mrow.atraso{background:rgba(240,127,45,.07);border-color:rgba(240,127,45,.28)}
 
 .faixas{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:16px}
 .fx{position:relative;overflow:hidden;background:linear-gradient(180deg,var(--card2),var(--card));
@@ -259,6 +261,10 @@ footer{text-align:center;color:var(--muted);font-size:11.5px;margin-top:24px;lin
 .lk .ar{margin-left:auto;color:var(--turq);flex:0 0 auto}
 @media (max-width:1100px){ .faixas{grid-template-columns:repeat(2,1fr)} }
 @media (max-width:820px){ .faixas,.links{grid-template-columns:1fr} }
+
+/* sete abas: aperta um pouco para caber em uma linha só */
+.abas .aba{padding:11px 15px;font-size:13px}
+@media (max-width:1280px){ .abas .aba{padding:10px 12px;font-size:12.5px} }
 </style>
 </head>
 <body>
@@ -283,7 +289,7 @@ footer{text-align:center;color:var(--muted);font-size:11.5px;margin-top:24px;lin
       <span class="chip">Coop <b>4340</b></span>
       <span class="chip"><b id="cPAs">—</b> PAs</span>
       <span class="chip"><b id="cProd">—</b> produtos</span>
-      <a class="chip link" href="#relatorios"
+      <a class="chip link" id="chipRel" href="#relatorios"
          title="Ir para a lista de relatórios analíticos do Sisbr">Relatórios analíticos
          <svg width="11" height="11" viewBox="0 0 16 16" fill="none" aria-hidden="true" style="vertical-align:-1px;margin-left:4px">
            <path d="M3.5 6L8 10.5L12.5 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
@@ -317,10 +323,10 @@ footer{text-align:center;color:var(--muted);font-size:11.5px;margin-top:24px;lin
       <div class="t">Resultado</div><div class="v num" id="k_res">—</div><div class="s" id="k_ress">—</div></div>
     <div class="kpi anim" style="--bar:var(--s2);animation-delay:.16s">
       <div class="t">Cessão de crédito</div><div class="v num" id="k_ces">—</div><div class="s" id="k_cess">—</div></div>
-    <div class="kpi anim" style="--bar:var(--s4);animation-delay:.2s">
-      <div class="t">Margem</div><div class="v num" id="k_mar">—</div><div class="s">Resultado ÷ faturamento</div></div>
-    <div class="kpi hero anim" style="animation-delay:.24s">
+    <div class="kpi hero anim" style="animation-delay:.2s">
       <div class="t">Resultado líquido</div><div class="v num" id="k_liq">—</div><div class="s" id="k_liqs">Resultado − cessão de crédito</div></div>
+    <div class="kpi anim" style="--bar:var(--s4);animation-delay:.24s">
+      <div class="t">Margem</div><div class="v num" id="k_mar">—</div><div class="s">Resultado ÷ faturamento</div></div>
   </div>
 
   <!-- ================= ABAS ================= -->
@@ -331,6 +337,7 @@ footer{text-align:center;color:var(--muted);font-size:11.5px;margin-top:24px;lin
     <button class="aba" data-c="6" data-p="at" type="button">Contas em atraso</button>
     <button class="aba" data-c="5" data-p="lk" type="button">Lounge Key</button>
     <button class="aba" data-c="4" data-p="sm" type="button">Simulador de anuidade</button>
+    <button class="aba" data-c="7" data-p="rl" type="button">Relatórios analíticos</button>
   </div>
 
   <!-- ================= ABA PA ================= -->
@@ -485,27 +492,61 @@ footer{text-align:center;color:var(--muted);font-size:11.5px;margin-top:24px;lin
       <a href="https://sisbranalitico.sisbr.coop.br/sisbranalitico/bi/?pathRef=.public_folders%2F%25C3%2581rea%2BP%25C3%25BAblica%2B-%2BConsumidor%2F%25C3%2581rea%2BP%25C3%25BAblica%2Bdo%2BSicoob%2B-%2BConsumidor%2FN%25C3%25BAmeros%2Be%2BNeg%25C3%25B3cios%2FRelat%25C3%25B3rios%2F02.%2BAnal%25C3%25ADtico%2FCART%25C3%2595ES%2FSICOOBCARD%2B-%2BGEST%25C3%2583O%2BDA%2BINADIMPL%25C3%258ANCIA%2FPainel%2Bde%2BContas%2Bem%2BAtraso" target="_blank" rel="noopener noreferrer">clique aqui</a>.</p>
   </div>
 
-  <!-- ================= RELATÓRIOS ANALÍTICOS ================= -->
-  <div class="bloco" id="relatorios">
-    <h3>Relatórios analíticos no Sisbr</h3>
-    <p class="sub">Todos abrem em nova aba, direto no caminho do relatório.</p>
-    <div class="links">
-      <a class="lk" href="https://sisbranalitico.sisbr.coop.br/sisbranalitico/bi/?pathRef=.public_folders%2F%25C3%2581rea%2BP%25C3%25BAblica%2B-%2BConsumidor%2F%25C3%2581rea%2BP%25C3%25BAblica%2Bdo%2BSicoob%2B-%2BConsumidor%2FN%25C3%25BAmeros%2Be%2BNeg%25C3%25B3cios%2FRelat%25C3%25B3rios%2F02.%2BAnal%25C3%25ADtico%2FCART%25C3%2595ES%2FSICOOBCARD%2B-%2BGEST%25C3%2583O%2BDA%2BINADIMPL%25C3%258ANCIA%2FPainel%2Bde%2BContas%2Bem%2BAtraso" target="_blank" rel="noopener noreferrer">
-        <div><div class="n">Painel de Contas em Atraso</div>
-             <div class="d">Conta a conta, com gerente, limite, dívida consolidada e faixa de atraso</div></div>
-        <span class="ar"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M6 3h7v7M13 3L6.5 9.5M11 10.5V13H3V5h2.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a>
-      <a class="lk" href="https://sisbranalitico.sisbr.coop.br/sisbranalitico/bi/?pathRef=.public_folders%2F%25C3%2581rea%2BP%25C3%25BAblica%2B-%2BConsumidor%2F%25C3%2581rea%2BP%25C3%25BAblica%2Bdo%2BSicoob%2B-%2BConsumidor%2FN%25C3%25BAmeros%2Be%2BNeg%25C3%25B3cios%2FRelat%25C3%25B3rios%2F02.%2BAnal%25C3%25ADtico%2FCART%25C3%2595ES%2FSICOOBCARD%2B-%2BGEST%25C3%2583O%2BDA%2BINADIMPL%25C3%258ANCIA%2FContas%2BCart%25C3%25A3o%2Bcom%2BCess%25C3%25A3o%2Bde%2BCr%25C3%25A9dito%252FEstorno%2Bde%2BCess%25C3%25A3o" target="_blank" rel="noopener noreferrer">
-        <div><div class="n">Cessão de Crédito / Estorno de Cessão</div>
-             <div class="d">Contas cartão com honra de avais e estornos</div></div>
-        <span class="ar"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M6 3h7v7M13 3L6.5 9.5M11 10.5V13H3V5h2.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a>
-      <a class="lk" href="https://sisbranalitico.sisbr.coop.br/sisbranalitico/bi/?pathRef=.public_folders%2F%25C3%2581rea%2BP%25C3%25BAblica%2B-%2BConsumidor%2F%25C3%2581rea%2BP%25C3%25BAblica%2Bdo%2BSicoob%2B-%2BConsumidor%2FN%25C3%25BAmeros%2Be%2BNeg%25C3%25B3cios%2FRelat%25C3%25B3rios%2F02.%2BAnal%25C3%25ADtico%2FCART%25C3%2595ES%2FSICOOBCARD%2B-%2BBASE%2BE%2BATIVA%25C3%2587%25C3%2583O%2FRL%2B-%2BSem%2Bcompras%2BCR%2B30%252B" target="_blank" rel="noopener noreferrer">
-        <div><div class="n">Cartões sem compras há mais de 30 dias</div>
-             <div class="d">Base e ativação — quem parou de transacionar no crédito</div></div>
-        <span class="ar"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M6 3h7v7M13 3L6.5 9.5M11 10.5V13H3V5h2.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a>
-      <a class="lk" href="https://sisbranalitico.sisbr.coop.br/sisbranalitico/bi/?pathRef=.public_folders%2F%25C3%2581rea%2BP%25C3%25BAblica%2B-%2BConsumidor%2F%25C3%2581rea%2BP%25C3%25BAblica%2Bdo%2BSicoob%2B-%2BConsumidor%2FN%25C3%25BAmeros%2Be%2BNeg%25C3%25B3cios%2FPain%25C3%25A9is%2F22%2B-%2BS%25C3%25ADntese%2BComercial%2B-%2BCart%25C3%25B5es%2FS%25C3%25ADntese%2BComercial%2B-%2BCart%25C3%25B5es" target="_blank" rel="noopener noreferrer">
-        <div><div class="n">Síntese Comercial · Cartões</div>
-             <div class="d">Painel gerencial de cartões da Área Pública</div></div>
-        <span class="ar"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M6 3h7v7M13 3L6.5 9.5M11 10.5V13H3V5h2.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a>
+  <!-- ================= ABA RELATÓRIOS ANALÍTICOS ================= -->
+  <div class="painel" id="rl" hidden>
+    <div class="nota">
+      Os relatórios que alimentam este painel e os que abrem o detalhe conta a conta, no
+      <b>Sisbr Analítico</b>. Todos abrem em nova aba, direto no caminho do relatório —
+      sem precisar navegar pelas pastas da Área Pública.
+    </div>
+
+    <div class="bloco" id="relatorios" data-c="7">
+      <h3>Gestão da inadimplência</h3>
+      <p class="sub">O que está por trás das abas de <b>contas em atraso</b> e de <b>cessão de crédito</b>.</p>
+      <div class="links">
+        <a class="lk" href="https://sisbranalitico.sisbr.coop.br/sisbranalitico/bi/?pathRef=.public_folders%2F%25C3%2581rea%2BP%25C3%25BAblica%2B-%2BConsumidor%2F%25C3%2581rea%2BP%25C3%25BAblica%2Bdo%2BSicoob%2B-%2BConsumidor%2FN%25C3%25BAmeros%2Be%2BNeg%25C3%25B3cios%2FRelat%25C3%25B3rios%2F02.%2BAnal%25C3%25ADtico%2FCART%25C3%2595ES%2FSICOOBCARD%2B-%2BGEST%25C3%2583O%2BDA%2BINADIMPL%25C3%258ANCIA%2FPainel%2Bde%2BContas%2Bem%2BAtraso" target="_blank" rel="noopener noreferrer">
+          <div><div class="n">Painel de Contas em Atraso</div>
+               <div class="d">Conta a conta, com gerente, limite, dívida consolidada e faixa de atraso</div></div>
+          <span class="ar"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M6 3h7v7M13 3L6.5 9.5M11 10.5V13H3V5h2.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a>
+        <a class="lk" href="https://sisbranalitico.sisbr.coop.br/sisbranalitico/bi/?pathRef=.public_folders%2F%25C3%2581rea%2BP%25C3%25BAblica%2B-%2BConsumidor%2F%25C3%2581rea%2BP%25C3%25BAblica%2Bdo%2BSicoob%2B-%2BConsumidor%2FN%25C3%25BAmeros%2Be%2BNeg%25C3%25B3cios%2FRelat%25C3%25B3rios%2F02.%2BAnal%25C3%25ADtico%2FCART%25C3%2595ES%2FSICOOBCARD%2B-%2BGEST%25C3%2583O%2BDA%2BINADIMPL%25C3%258ANCIA%2FContas%2BCart%25C3%25A3o%2Bcom%2BCess%25C3%25A3o%2Bde%2BCr%25C3%25A9dito%252FEstorno%2Bde%2BCess%25C3%25A3o" target="_blank" rel="noopener noreferrer">
+          <div><div class="n">Cessão de Crédito / Estorno de Cessão</div>
+               <div class="d">Contas cartão com honra de avais e estornos</div></div>
+          <span class="ar"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M6 3h7v7M13 3L6.5 9.5M11 10.5V13H3V5h2.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a>
+      </div>
+    </div>
+
+    <div class="bloco" data-c="7">
+      <h3>Base e ativação</h3>
+      <p class="sub">Quem tem cartão, quem parou de usar e quem travou antes de emitir.</p>
+      <div class="links">
+        <a class="lk" href="https://sisbranalitico.sisbr.coop.br/sisbranalitico/bi/?pathRef=.public_folders%2F%25C3%2581rea%2BP%25C3%25BAblica%2B-%2BConsumidor%2F%25C3%2581rea%2BP%25C3%25BAblica%2Bdo%2BSicoob%2B-%2BConsumidor%2FN%25C3%25BAmeros%2Be%2BNeg%25C3%25B3cios%2FRelat%25C3%25B3rios%2F02.%2BAnal%25C3%25ADtico%2FCART%25C3%2595ES%2FSICOOBCARD%2B-%2BBASE%2BE%2BATIVA%25C3%2587%25C3%2583O%2FContas%2BCart%25C3%25A3o%2B-%2BRela%25C3%25A7%25C3%25A3o%2BAnal%25C3%25ADtica%2Bde%2BContas" target="_blank" rel="noopener noreferrer">
+          <div><div class="n">Conta Cartão · Relação analítica das contas</div>
+               <div class="d">A base completa de contas cartão da cooperativa</div></div>
+          <span class="ar"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M6 3h7v7M13 3L6.5 9.5M11 10.5V13H3V5h2.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a>
+        <a class="lk" href="https://sisbranalitico.sisbr.coop.br/sisbranalitico/bi/?pathRef=.public_folders%2F%25C3%2581rea%2BP%25C3%25BAblica%2B-%2BConsumidor%2F%25C3%2581rea%2BP%25C3%25BAblica%2Bdo%2BSicoob%2B-%2BConsumidor%2FN%25C3%25BAmeros%2Be%2BNeg%25C3%25B3cios%2FRelat%25C3%25B3rios%2F02.%2BAnal%25C3%25ADtico%2FCART%25C3%2595ES%2FSICOOBCARD%2B-%2BBASE%2BE%2BATIVA%25C3%2587%25C3%2583O%2FRL%2B-%2BSem%2Bcompras%2BCR%2B30%252B" target="_blank" rel="noopener noreferrer">
+          <div><div class="n">Cartões sem compras há mais de 30 dias</div>
+               <div class="d">Quem parou de transacionar no crédito</div></div>
+          <span class="ar"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M6 3h7v7M13 3L6.5 9.5M11 10.5V13H3V5h2.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a>
+        <a class="lk" href="https://sisbranalitico.sisbr.coop.br/sisbranalitico/bi/?pathRef=.public_folders%2F%25C3%2581rea%2BP%25C3%25BAblica%2B-%2BConsumidor%2F%25C3%2581rea%2BP%25C3%25BAblica%2Bdo%2BSicoob%2B-%2BConsumidor%2FN%25C3%25BAmeros%2Be%2BNeg%25C3%25B3cios%2FRelat%25C3%25B3rios%2F02.%2BAnal%25C3%25ADtico%2FCART%25C3%2595ES%2FSICOOBCARD%2B-%2BBASE%2BE%2BATIVA%25C3%2587%25C3%2583O%2FRL%2B-%2BBloqueio%2Bde%2BEmiss%25C3%25A3o%2B45%252B" target="_blank" rel="noopener noreferrer">
+          <div><div class="n">Bloqueio de Emissão há mais de 45 dias</div>
+               <div class="d">Cartões aprovados que não chegaram a ser emitidos</div></div>
+          <span class="ar"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M6 3h7v7M13 3L6.5 9.5M11 10.5V13H3V5h2.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a>
+      </div>
+    </div>
+
+    <div class="bloco" data-c="7">
+      <h3>Benefícios e visão gerencial</h3>
+      <p class="sub">O detalhe do <b>Lounge Key</b> e o painel comercial de cartões.</p>
+      <div class="links">
+        <a class="lk" href="https://sisbranalitico.sisbr.coop.br/sisbranalitico/bi/?pathRef=.public_folders%2F%25C3%2581rea%2BP%25C3%25BAblica%2B-%2BConsumidor%2F%25C3%2581rea%2BP%25C3%25BAblica%2Bdo%2BSicoob%2B-%2BConsumidor%2FN%25C3%25BAmeros%2Be%2BNeg%25C3%25B3cios%2FRelat%25C3%25B3rios%2F02.%2BAnal%25C3%25ADtico%2FCART%25C3%2595ES%2FRelat%25C3%25B3rio%2Bde%2Bacessos%2Bao%2Blounge%2Bkey" target="_blank" rel="noopener noreferrer">
+          <div><div class="n">Acessos ao Lounge Key · analítico</div>
+               <div class="d">Quem acessou as salas VIP — o que vira a despesa da aba Lounge Key</div></div>
+          <span class="ar"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M6 3h7v7M13 3L6.5 9.5M11 10.5V13H3V5h2.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a>
+        <a class="lk" href="https://sisbranalitico.sisbr.coop.br/sisbranalitico/bi/?pathRef=.public_folders%2F%25C3%2581rea%2BP%25C3%25BAblica%2B-%2BConsumidor%2F%25C3%2581rea%2BP%25C3%25BAblica%2Bdo%2BSicoob%2B-%2BConsumidor%2FN%25C3%25BAmeros%2Be%2BNeg%25C3%25B3cios%2FPain%25C3%25A9is%2F22%2B-%2BS%25C3%25ADntese%2BComercial%2B-%2BCart%25C3%25B5es%2FS%25C3%25ADntese%2BComercial%2B-%2BCart%25C3%25B5es" target="_blank" rel="noopener noreferrer">
+          <div><div class="n">Síntese Comercial · Cartões</div>
+               <div class="d">Painel gerencial de cartões da Área Pública</div></div>
+          <span class="ar"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M6 3h7v7M13 3L6.5 9.5M11 10.5V13H3V5h2.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a>
+      </div>
     </div>
   </div>
 
@@ -1074,7 +1115,7 @@ function renderLK(){
    os filtros de PA, bandeira, grupo e produto valem normalmente.
    ATR = [ PA, produto, faixa, quantidade de contas, valor ]
    =========================================================== */
-var CORFX=["#00A896","#2A93BA","#BE801E","#E2645A"];
+var CORFX=["#2EC27E","#F5C518","#F07F2D","#E24A3F"];
 var NFX=FAIXAS.length, atrMetrica="v";
 
 function passaAtr(r){
@@ -1295,7 +1336,7 @@ Array.prototype.forEach.call(document.querySelectorAll(".aba"),function(b){
     Array.prototype.forEach.call(document.querySelectorAll(".aba"),function(x){x.classList.remove("on")});
     b.classList.add("on");
     abaAtual=b.dataset.p;
-    ["pa","pr","ln","at","lk","sm"].forEach(function(id){
+    ["pa","pr","ln","at","lk","sm","rl"].forEach(function(id){
       var el=document.getElementById(id);
       el.hidden=(id!==abaAtual);
       if(id===abaAtual){ el.style.animation="none"; void el.offsetWidth; el.style.animation=""; }
@@ -1315,6 +1356,15 @@ document.getElementById("sPar").oninput=function(){ (simEdit[simSel]=simEdit[sim
 document.getElementById("sPct").oninput=function(){ (simEdit[simSel]=simEdit[simSel]||{}).pct=parseFloat(this.value)||0; renderSim(); };
 document.getElementById("sReset").onclick=function(){ delete simEdit[simSel]; renderSim(); };
 
+(function(){
+  var c=document.getElementById("chipRel");
+  if(!c) return;
+  c.onclick=function(e){
+    e.preventDefault();
+    var b=document.querySelector('.aba[data-p="rl"]');
+    if(b){ b.click(); window.scrollTo({top:0,behavior:"smooth"}); }
+  };
+})();
 preencheFiltros();
 atualiza();
 
