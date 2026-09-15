@@ -277,9 +277,9 @@ footer{text-align:center;color:var(--muted);font-size:11.5px;margin-top:24px;lin
 .kpi.hero .v{font-size:22px}
 @media (max-width:1400px){ .kpi .v{font-size:19px} .kpi.hero .v{font-size:20px} }
 /* ================= ABA REDE (v15) ================= */
-.aba.on[data-c="8"]{background:linear-gradient(135deg,#3AA0D0,#00AE9D)}
-.bloco[data-c="8"] h3::before{background:linear-gradient(180deg,#3AA0D0,#00AE9D)}
-.mrow.rede{background:rgba(58,160,208,.08);border-color:rgba(58,160,208,.28)}
+.aba.on[data-c="8"]{background:linear-gradient(135deg,#00AE9D,#7DB61C)}
+.bloco[data-c="8"] h3::before{background:linear-gradient(180deg,#00AE9D,#49479D)}
+.mrow.rede{background:rgba(0,174,157,.07);border-color:rgba(0,174,157,.26)}
 .redes{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px;margin-bottom:16px}
 .rc{position:relative;overflow:hidden;background:linear-gradient(180deg,var(--card2),var(--card));
     border:1px solid var(--line);border-radius:var(--r);padding:16px 18px;transition:transform .2s,border-color .2s}
@@ -295,13 +295,21 @@ footer{text-align:center;color:var(--muted);font-size:11.5px;margin-top:24px;lin
 .rc dt{color:var(--ink2)} .rc dd{margin:0;text-align:right;font-weight:600;white-space:nowrap}
 .rdot{display:inline-block;width:9px;height:9px;border-radius:3px;margin-right:8px;vertical-align:0}
 /* oito abas: aperta mais um pouco */
-.abas .aba{padding:9px 10px;font-size:12.5px} .abas{gap:6px}
-@media (max-width:1400px){ .abas .aba{padding:9px 9px;font-size:12px} }
-@media (max-width:1300px){ .abas .aba{padding:8px 7px;font-size:11.5px} .abas{gap:5px} }
+.abas .aba{padding:9px 8px;font-size:12px;letter-spacing:-.1px} .abas{gap:5px}
+@media (max-width:1400px){ .abas .aba{padding:8px 7px;font-size:11.5px} .abas{gap:4px} }
+@media (max-width:1300px){ .abas .aba{padding:8px 6px;font-size:11px} .abas{gap:4px} }
 .rreg{color:var(--muted);font-size:11px;margin-left:4px}
 #t_rd th,#t_rd td{padding-left:7px;padding-right:7px}
 #t_rd{font-size:11.8px}
 @media (max-width:1400px){ #t_rd th,#t_rd td{padding-left:5px;padding-right:5px} #t_rd{font-size:11px} #t_rd th{letter-spacing:.3px} }
+/* v16 — paleta Sicoob: cores escuras (roxo, verde) ganham contorno para aparecer no fundo preto */
+.rc .rt i,.rdot{box-shadow:0 0 0 1px rgba(234,246,244,.35)}
+.rchips{display:flex;gap:6px;flex-wrap:wrap;margin:-4px 0 12px}
+.rchip{font:inherit;font-size:12px;font-weight:600;cursor:pointer;padding:6px 12px;border-radius:999px;
+  border:1px solid var(--line);background:rgba(255,255,255,.03);color:var(--ink2);transition:all .16s}
+.rchip:hover{border-color:var(--line2);color:var(--ink)}
+.rchip.on{background:var(--rc,var(--turq));border-color:transparent;color:#F2FBF9;font-weight:800;
+  text-shadow:0 1px 2px rgba(0,0,0,.45);box-shadow:0 0 0 1px rgba(234,246,244,.3)}
 /* célula sem valor no mês */
 td.zero{color:var(--muted)}
 </style>
@@ -404,7 +412,7 @@ td.zero{color:var(--muted)}
   <!-- ================= ABAS ================= -->
   <div class="abas">
     <button class="aba on" data-c="1" data-p="pa" type="button">Resultado por PA</button>
-    <button class="aba" data-c="8" data-p="rd" type="button">Resultado por rede</button>
+    <button class="aba" data-c="8" data-p="rd" type="button">Análise por Rede de Atendimento</button>
     <button class="aba" data-c="2" data-p="pr" type="button">Resultado por produto</button>
     <button class="aba" data-c="3" data-p="ln" type="button">Linhas de receita e despesa</button>
     <button class="aba" data-c="6" data-p="at" type="button">Contas em atraso</button>
@@ -428,7 +436,7 @@ td.zero{color:var(--muted)}
     </div>
   </div>
 
-  <!-- ================= ABA REDE (v15) ================= -->
+  <!-- ================= ABA ANÁLISE POR REDE DE ATENDIMENTO (v15/v16) ================= -->
   <div class="painel" id="rd" hidden>
     <div id="rd_faixa"></div>
     <div class="redes" id="rd_cards"></div>
@@ -436,10 +444,9 @@ td.zero{color:var(--muted)}
       <h3>Resultado, cessão e resultado líquido por rede</h3>
       <p class="sub">No recorte dos filtros. Passe o mouse para ver os valores.</p>
       <div class="legenda">
-        <span><i style="background:#00A896"></i>Resultado</span>
-        <span><i style="background:#BE801E"></i>Cessão de crédito</span>
+        <span><i style="background:#00AE9D"></i>Resultado</span>
+        <span><i style="background:#49479D"></i>Cessão de crédito</span>
         <span><i style="background:#C9D200"></i>Resultado líquido</span>
-        <span><i style="background:#D45B50"></i>Resultado líquido negativo</span>
       </div>
       <div class="cv" style="height:340px"><canvas id="c_rd"></canvas></div>
     </div>
@@ -453,17 +460,31 @@ td.zero{color:var(--muted)}
         <h3>Contas em atraso por rede</h3>
         <p class="sub">Valor por faixa de atraso no retrato de <span class="atref"></span> — o filtro de período não se aplica.</p>
         <div class="legenda">
-          <span><i style="background:#2EC27E"></i>0 a 14</span><span><i style="background:#F5C518"></i>15 a 29</span>
-          <span><i style="background:#F07F2D"></i>30 a 59</span><span><i style="background:#E24A3F"></i>acima de 60</span>
+          <span><i style="background:#C9D200"></i>0 a 14</span><span><i style="background:#7DB61C"></i>15 a 29</span>
+          <span><i style="background:#00AE9D"></i>30 a 59</span><span><i style="background:#49479D"></i>acima de 60</span>
         </div>
         <div class="cv" style="height:232px"><canvas id="c_rdat"></canvas></div>
       </div>
     </div>
     <div class="bloco" data-c="8">
-      <h3>Resultado líquido mês a mês</h3>
-      <p class="sub">Por rede, no recorte de PA, bandeira, grupo e produto — o filtro de período não se aplica a este gráfico.</p>
-      <div class="legenda" id="rd_leg"></div>
-      <div class="cv" style="height:320px"><canvas id="c_rdevo"></canvas></div>
+      <div class="cabbloco">
+        <div>
+          <h3>Mês a mês: resultado, cessão e Lounge Key</h3>
+          <p class="sub" id="rd_msub">—</p>
+        </div>
+        <div class="seg" id="rd_seg">
+          <button class="on" data-v="g" type="button">Gráfico</button>
+          <button data-v="t" type="button">Tabela</button>
+        </div>
+      </div>
+      <div class="rchips" id="rd_chips"></div>
+      <div class="legenda" id="rd_mleg">
+        <span><i style="background:#00AE9D"></i>Resultado</span>
+        <span><i style="background:#49479D"></i>Cessão de crédito</span>
+        <span><i style="background:#C9D200;height:3px;border-radius:2px"></i>Lounge Key (linha, eixo da direita)</span>
+      </div>
+      <div class="cv" id="cv_rdm" style="height:340px"><canvas id="c_rdm"></canvas></div>
+      <div class="tbl-wrap" id="rd_mtab" hidden><table id="t_rdm"></table></div>
     </div>
     <div class="bloco" data-c="8">
       <h3>Comparativo das redes</h3>
@@ -1438,7 +1459,11 @@ function renderAtraso(){
    entram como "Sem rede", para o total fechar com a cooperativa.
    =========================================================== */
 var NR=REDES.length, I_SEMREDE=NR;
-var CORREDE=["#00B3A0","#8E8CE6","#8DC53F","#3AA0D0","#728C8A"];
+/* paleta Sicoob (pedido de 15/09) */
+var SIC={verde:"#003641", turq:"#00AE9D", lima:"#7DB61C", citrico:"#C9D200", roxo:"#49479D"};
+var CORREDE=[SIC.turq, SIC.lima, SIC.citrico, SIC.roxo, SIC.verde];
+var CORFXR=[SIC.citrico, SIC.lima, SIC.turq, SIC.roxo];
+var rdModo="g";
 function redeDoPA(a){ var r=PAREDE[a]; return r>=0 ? r : I_SEMREDE; }
 function nomeRede(k){ return k===I_SEMREDE ? "Sem rede" : REDES[k].n; }
 function regRede(k){ return k===I_SEMREDE ? "sede, recuperação e PAs fora da planilha de rede" : "Regional "+REDES[k].g; }
@@ -1509,10 +1534,10 @@ function renderRede(){
   desenha("c_rd",{
     type:"bar",
     data:{ labels:labels, datasets:[
-      {label:"Resultado", data:itens.map(function(x){return x.res}), backgroundColor:"#00A896", borderRadius:5, borderSkipped:false},
-      {label:"Cessão de crédito", data:itens.map(function(x){return x.ces}), backgroundColor:"#BE801E", borderRadius:5, borderSkipped:false},
+      {label:"Resultado", data:itens.map(function(x){return x.res}), backgroundColor:SIC.turq, borderRadius:5, borderSkipped:false},
+      {label:"Cessão de crédito", data:itens.map(function(x){return x.ces}), backgroundColor:SIC.roxo, borderColor:"rgba(234,246,244,.28)", borderWidth:1, borderRadius:5, borderSkipped:false},
       {label:"Resultado líquido", data:itens.map(function(x){return x.liq}),
-        backgroundColor:itens.map(function(x){ return x.liq<0?"#D45B50":"#C9D200"; }), borderRadius:5, borderSkipped:false}]},
+        backgroundColor:SIC.citrico, borderRadius:5, borderSkipped:false}]},
     options:{ maintainAspectRatio:false, responsive:true,
       plugins:{ legend:{display:false},
         tooltip:Object.assign({},TOOLTIP,{ displayColors:true, callbacks:{
@@ -1525,7 +1550,7 @@ function renderRede(){
   desenha("c_rdlk",{
     type:"bar",
     data:{ labels:lk.map(function(x){return nomeRede(x.k)}),
-      datasets:[{ data:lk.map(function(x){return x.lk}), backgroundColor:lk.map(function(x){return CORREDE[x.k]}),
+      datasets:[{ data:lk.map(function(x){return x.lk}), backgroundColor:lk.map(function(x){return CORREDE[x.k]}), borderColor:"rgba(234,246,244,.28)", borderWidth:1,
         borderRadius:5, borderSkipped:false, barPercentage:.72 }]},
     options:{ indexAxis:"y", maintainAspectRatio:false, responsive:true,
       plugins:{ legend:{display:false},
@@ -1542,7 +1567,7 @@ function renderRede(){
     data:{ labels:at.map(function(x){return nomeRede(x.k)}),
       datasets:FAIXAS.map(function(fn,f){ return { label:fn,
         data:at.map(function(x){ return atr.linhas[x.k][f].v; }),
-        backgroundColor:CORFX[f], borderSkipped:false, barPercentage:.72 }; })},
+        backgroundColor:CORFXR[f], borderColor:"rgba(6,13,13,.6)", borderWidth:1, borderSkipped:false, barPercentage:.72 }; })},
     options:{ indexAxis:"y", maintainAspectRatio:false, responsive:true,
       plugins:{ legend:{display:false},
         tooltip:Object.assign({},TOOLTIP,{ displayColors:true, callbacks:{
@@ -1550,28 +1575,59 @@ function renderRede(){
       scales:{ x:Object.assign(eixoX(abrev),{stacked:true}), y:Object.assign(eixoY(),{stacked:true}) } }
   });
 
-  /* ---- evolução do resultado líquido por rede (ignora o filtro de período) ---- */
-  var agm=[]; for(var k=0;k<=NR;k++){ var s=[]; for(var m=0;m<NM;m++) s.push(0); agm.push(s); }
+  /* ---- mês a mês: resultado, cessão e Lounge Key (ignora o filtro de período) ---- */
+  var mm=[]; for(var m=0;m<NM;m++) mm.push({res:0,ces:0,lk:0});
   for(var i=0;i<N;i++){
     if(!passa(i,true)) continue;
-    var kk=redeDoPA(R_a[i]), v=-V[I_CES][i];
+    var o=mm[R_m[i]], v=0;
     for(var c=0;c<NREC+NDES;c++) v+=V[c][i];
-    agm[kk][R_m[i]]+=v;
+    o.res+=v; o.ces+=V[I_CES][i]; o.lk+=Math.abs(V[I_LOUNGE][i]);
   }
-  desenha("c_rdevo",{
-    type:"line",
-    data:{ labels:MES, datasets:itens.map(function(x){ return {
-      label:nomeRede(x.k), data:agm[x.k], borderColor:CORREDE[x.k], backgroundColor:CORREDE[x.k],
-      borderWidth:x.k===I_SEMREDE?1.5:2.5, borderDash:x.k===I_SEMREDE?[5,4]:[], pointRadius:3, pointHoverRadius:6, tension:.18 }; })},
-    options:{ maintainAspectRatio:false, responsive:true, interaction:{mode:"index",intersect:false},
-      plugins:{ legend:{display:false},
-        tooltip:Object.assign({},TOOLTIP,{ displayColors:true, callbacks:{
-          title:function(c){ return c[0].label+"/2026"; },
-          label:function(c){ return c.dataset.label+": "+cheio(c.parsed.y); }}})},
-      scales:{ x:{grid:{display:false},border:{display:false},ticks:{color:COR.muted}}, y:eixoX(abrev) } }
+  document.getElementById("rd_chips").innerHTML=
+    [-1].concat(REDES.map(function(_,k){return k})).concat([I_SEMREDE]).map(function(k){
+      return '<button type="button" class="rchip'+(F.rede===k?' on':'')+'" data-k="'+k+'"'+
+        (k>=0?' style="--rc:'+CORREDE[k]+'"':'')+'>'+(k<0?"Cooperativa":nomeRede(k))+'</button>'; }).join("");
+  Array.prototype.forEach.call(document.querySelectorAll("#rd_chips .rchip"),function(bt){
+    bt.onclick=function(){ F.rede=+bt.dataset.k; document.getElementById("fRede").value=F.rede; atualizaListaPAs(); atualiza(); };
   });
-  document.getElementById("rd_leg").innerHTML=itens.map(function(x){
-    return '<span><i style="background:'+CORREDE[x.k]+'"></i>'+nomeRede(x.k)+'</span>'; }).join("");
+  document.getElementById("rd_msub").textContent=(F.rede>=0?"Rede "+nomeRede(F.rede):"Toda a cooperativa")+
+    " · no recorte de PA, bandeira, grupo e produto — o filtro de período não se aplica.";
+  var modoT=(rdModo==="t");
+  document.getElementById("cv_rdm").hidden=modoT;
+  document.getElementById("rd_mleg").hidden=modoT;
+  document.getElementById("rd_mtab").hidden=!modoT;
+  if(!modoT){
+    desenha("c_rdm",{
+      type:"bar",
+      data:{ labels:MES, datasets:[
+        {label:"Resultado", data:mm.map(function(o){return o.res}), backgroundColor:SIC.turq, borderRadius:5, borderSkipped:false},
+        {label:"Cessão de crédito", data:mm.map(function(o){return o.ces}), backgroundColor:SIC.roxo,
+          borderColor:"rgba(234,246,244,.28)", borderWidth:1, borderRadius:5, borderSkipped:false},
+        {label:"Lounge Key", type:"line", yAxisID:"y1", data:mm.map(function(o){return o.lk}), borderColor:SIC.citrico,
+          backgroundColor:SIC.citrico, borderWidth:2.5, pointRadius:4, pointHoverRadius:6, tension:.25, order:-1}]},
+      options:{ maintainAspectRatio:false, responsive:true, interaction:{mode:"index",intersect:false},
+        plugins:{ legend:{display:false},
+          tooltip:Object.assign({},TOOLTIP,{ displayColors:true, callbacks:{
+            title:function(c){ return c[0].label+"/2026"; },
+            label:function(c){ return c.dataset.label+": "+cheio(c.parsed.y); },
+            afterBody:function(c){ var o=mm[c[0].dataIndex]; return ["Resultado líquido: "+cheio(o.res-o.ces)]; }}})},
+        scales:{ x:{grid:{display:false},border:{display:false},ticks:{color:COR.ink2}},
+                 y:Object.assign(eixoX(abrev),{position:"left", title:{display:true,text:"Resultado e cessão",color:COR.muted}}),
+                 y1:{position:"right", beginAtZero:true, grid:{display:false}, border:{display:false},
+                     title:{display:true,text:"Lounge Key",color:SIC.citrico},
+                     ticks:{color:SIC.citrico, maxTicksLimit:6, callback:function(v){ return abrev(v); }}} } }
+    });
+  } else {
+    var tr={res:0,ces:0,lk:0};
+    var lm=mm.map(function(o,m){ tr.res+=o.res; tr.ces+=o.ces; tr.lk+=o.lk; var lq=o.res-o.ces;
+      return {raw:[m,o.res,o.ces,lq,o.lk], cel:[MES[m]+"/2026",rs(o.res,0),rs(o.ces,0),rs(lq,0),rs(o.lk,0)],
+              cor:["",cls(o.res),"",cls(lq),o.lk?"neg":""]}; });
+    var tb=document.getElementById("t_rdm"); if(!tb._ord) tb._ord={c:0,d:1};   /* Jan → Ago */
+    tabela(tb,
+      [{t:"Mês"},{t:"Resultado",ajuda:"Receita + despesa"},{t:"Cessão",ajuda:"Cessão de crédito (honra de avais)"},
+       {t:"Resultado líquido",dest:true,ajuda:"Resultado − cessão"},{t:"Lounge Key",ajuda:"Despesa de Lounge Key"}],
+      lm, 0, ["Total",rs(tr.res,0),rs(tr.ces,0),rs(tr.res-tr.ces,0),rs(tr.lk,0)]);
+  }
 
   /* ---- tabela ---- */
   var cols=[{t:"Rede",ajuda:"Rede e regional"},    {t:"Receita"},{t:"Despesa"},{t:"Resultado",ajuda:"Receita + despesa (crédito e débito)"},
@@ -1692,6 +1748,12 @@ Array.prototype.forEach.call(document.querySelectorAll("#at_seg button"),functio
   b.onclick=function(){
     Array.prototype.forEach.call(document.querySelectorAll("#at_seg button"),function(x){x.classList.remove("on")});
     b.classList.add("on"); atrMetrica=b.dataset.v; renderAtraso();
+  };
+});
+Array.prototype.forEach.call(document.querySelectorAll("#rd_seg button"),function(b){
+  b.onclick=function(){
+    Array.prototype.forEach.call(document.querySelectorAll("#rd_seg button"),function(x){x.classList.remove("on")});
+    b.classList.add("on"); rdModo=b.dataset.v; renderRede();
   };
 });
 document.getElementById("sProd").onchange=function(){ simSel=+this.value; renderSim(); };
