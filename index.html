@@ -265,6 +265,12 @@ footer{text-align:center;color:var(--muted);font-size:11.5px;margin-top:24px;lin
 /* sete abas: aperta um pouco para caber em uma linha só */
 .abas .aba{padding:11px 15px;font-size:13px}
 @media (max-width:1280px){ .abas .aba{padding:10px 12px;font-size:12.5px} }
+
+/* arte dos cartões no cabeçalho — vetor, sem imagem externa */
+.cardart{flex:0 0 auto;line-height:0;opacity:.9;transition:opacity .2s,transform .3s}
+.cardart:hover{opacity:1;transform:translateY(-2px)}
+.cardart svg{display:block;filter:drop-shadow(0 10px 20px rgba(0,0,0,.45))}
+@media (max-width:1240px){ .cardart{display:none} }
 </style>
 </head>
 <body>
@@ -284,6 +290,38 @@ footer{text-align:center;color:var(--muted);font-size:11.5px;margin-top:24px;lin
         <p>Resultado, cessão de crédito e linhas de receita e despesa</p>
       </div>
     </div>
+      <div class="cardart" aria-hidden="true" title="Portfólio Sicoobcard">
+        <svg width="186" height="56" viewBox="0 0 186 56" fill="none">
+          <defs>
+            <linearGradient id="ca1" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#0D5257"/><stop offset="1" stop-color="#08343A"/></linearGradient>
+            <linearGradient id="ca2" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#00BCA9"/><stop offset="1" stop-color="#067E76"/></linearGradient>
+            <linearGradient id="ca3" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#8FCB20"/><stop offset="1" stop-color="#5A8F13"/></linearGradient>
+            <linearGradient id="ca4" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#2B3A41"/><stop offset="1" stop-color="#090F11"/></linearGradient>
+          </defs>
+          <g transform="translate(2,3)">
+            <g transform="translate(0,16) rotate(-9)">
+              <rect width="72" height="45" rx="6.5" fill="url(#ca1)" stroke="rgba(234,246,244,.13)"/>
+              <rect x="9" y="13" width="13" height="9.5" rx="2.2" fill="rgba(234,246,244,.28)"/>
+              <rect x="9" y="30" width="31" height="3.4" rx="1.7" fill="rgba(234,246,244,.18)"/></g>
+            <g transform="translate(37,12) rotate(-6)">
+              <rect width="72" height="45" rx="6.5" fill="url(#ca2)" stroke="rgba(234,246,244,.16)"/>
+              <rect x="9" y="13" width="13" height="9.5" rx="2.2" fill="rgba(4,33,30,.34)"/>
+              <rect x="9" y="30" width="31" height="3.4" rx="1.7" fill="rgba(4,33,30,.24)"/></g>
+            <g transform="translate(74,7) rotate(-3)">
+              <rect width="72" height="45" rx="6.5" fill="url(#ca3)" stroke="rgba(234,246,244,.16)"/>
+              <rect x="9" y="13" width="13" height="9.5" rx="2.2" fill="rgba(4,33,30,.34)"/>
+              <rect x="9" y="30" width="31" height="3.4" rx="1.7" fill="rgba(4,33,30,.24)"/></g>
+            <g transform="translate(110,2)">
+              <rect width="72" height="45" rx="6.5" fill="url(#ca4)" stroke="rgba(234,246,244,.24)"/>
+              <rect x="9" y="13" width="13" height="9.5" rx="2.2" fill="rgba(201,210,0,.6)"/>
+              <rect x="9" y="30" width="31" height="3.4" rx="1.7" fill="rgba(234,246,244,.24)"/></g>
+          </g>
+        </svg>
+      </div>
     <div class="chips">
       <span class="chip">Base <b id="cPeriodo">—</b></span>
       <span class="chip">Coop <b>4340</b></span>
@@ -415,14 +453,14 @@ footer{text-align:center;color:var(--muted);font-size:11.5px;margin-top:24px;lin
   <div class="painel" id="lk" hidden>
     <div id="lk_faixa"></div>
     <div class="bloco" data-c="5">
+      <h3>Despesa de Lounge Key mês a mês</h3>
+      <p class="sub">No recorte de PA, bandeira, grupo e produto — o filtro de período não se aplica a este gráfico.</p>
+      <div class="cv" style="height:320px"><canvas id="c_lkevo"></canvas></div>
+    </div>
+    <div class="bloco" data-c="5">
       <h3>Quem mais gasta com Lounge Key</h3>
       <p class="sub">PAs do maior para o menor gasto no recorte atual.</p>
       <div class="cv" id="cv_lk" style="height:520px"><canvas id="c_lk"></canvas></div>
-    </div>
-    <div class="bloco" data-c="5">
-      <h3>Lounge Key mês a mês</h3>
-      <p class="sub">No recorte de PA, bandeira, grupo e produto (o filtro de período não se aplica a este gráfico).</p>
-      <div class="cv" style="height:280px"><canvas id="c_lkevo"></canvas></div>
     </div>
     <div class="bloco" data-c="5">
       <h3>Lounge Key por PA</h3>
@@ -1032,23 +1070,36 @@ function renderSim(){
 
 /* ===========================================================
    10b. ABA — LOUNGE KEY
+   Aba enxuta, a pedido: fala só da despesa de Lounge Key.
+   Nada de peso na receita, despesa do PA ou resultado do PA aqui —
+   isso vive na aba de linhas de receita e despesa.
    =========================================================== */
 function renderLK(){
   var ag=agrega(function(i){return R_a[i]}, NPA, false), t=ag.total;
-  var tot=Math.abs(t[I_LOUNGE]), des=Math.abs(despesa(t)), rec=receita(t);
+  var tot=Math.abs(t[I_LOUNGE]);
+
   var itens=[];
   for(var a=0;a<NPA;a++){
     var v=Math.abs(ag.linhas[a][I_LOUNGE]);
-    if(v>0) itens.push({a:a, v:v, r:ag.linhas[a]});
+    if(v>0) itens.push({a:a, v:v});
   }
   itens.sort(function(x,y){ return y.v-x.v; });
 
+  /* série mensal — ignora o filtro de período, como nos outros gráficos de evolução */
+  var agm=agrega(function(i){return R_m[i]}, NM, true);
+  var serie=agm.linhas.map(function(r){ return Math.abs(r[I_LOUNGE]); });
+  var iMax=0; for(var k=1;k<NM;k++) if(serie[k]>serie[iMax]) iMax=k;
+  var mesesNoRecorte=(F.mes>=0?1:NM);
+  var media=tot/mesesNoRecorte;
+
+  /* ---- faixa: só Lounge Key ---- */
   var f=document.getElementById("lk_faixa");
   if(itens.length){
     var top=itens[0];
     f.innerHTML='<div class="mrow"><span class="mtag">Lounge Key no recorte</span><b class="num neg">'+rs(tot,0)+'</b>'+
-      '<span class="msep"></span><span class="mtag">Peso na despesa</span><b class="num">'+pc(des?tot/des:0,1)+'</b>'+
-      '<span class="msep"></span><span class="mtag">Peso na receita</span><b class="num">'+pc(rec?tot/rec:0,1)+'</b>'+
+      '<span class="msep"></span><span class="mtag">Média por mês</span><b class="num">'+rs(media,0)+'</b>'+
+      '<span class="msep"></span><span class="mtag">Mês de maior gasto</span><b class="num">'+MES[iMax]+'</b>'+
+      '<span class="mnome">'+rs(serie[iMax],0)+'</span>'+
       '<span class="msep"></span><span class="mtag">Quem mais gasta</span><b class="num neg">'+rs(top.v,0)+'</b>'+
       '<span class="mnome">'+nomePA(top.a)+' · '+pc(tot?top.v/tot:0,1)+' do total</span>'+
       '<span class="mnota">'+itens.length+' PAs com despesa de Lounge Key</span></div>';
@@ -1056,6 +1107,22 @@ function renderLK(){
     f.innerHTML='<div class="mrow"><span class="mtag">Sem despesa de Lounge Key neste recorte</span></div>';
   }
 
+  /* ---- mês a mês ---- */
+  desenha("c_lkevo",{
+    type:"bar",
+    data:{ labels:MES,
+      datasets:[{ label:"Lounge Key", data:serie,
+        backgroundColor:serie.map(function(v,i){ return i===iMax?"#C9D200":"rgba(125,182,28,.85)"; }),
+        borderRadius:6, borderSkipped:false, barPercentage:.62, categoryPercentage:.85 }]},
+    options:{ maintainAspectRatio:false, responsive:true,
+      plugins:{ legend:{display:false},
+        tooltip:Object.assign({},TOOLTIP,{ callbacks:{
+          title:function(c){ return c[0].label+"/2026" },
+          label:function(c){ return "Lounge Key: "+rs(-c.parsed.y,0) }}})},
+      scales:{ x:{grid:{display:false},border:{display:false},ticks:{color:COR.muted}}, y:eixoX(abrev) } }
+  });
+
+  /* ---- ranking de PAs ---- */
   var vis=itens.slice(0,25);
   document.getElementById("cv_lk").style.height=Math.max(260, vis.length*27+50)+"px";
   desenha("c_lk",{
@@ -1069,42 +1136,22 @@ function renderLK(){
         tooltip:Object.assign({},TOOLTIP,{ callbacks:{
           title:function(c){ return c[0].label },
           label:function(c){
-            var x=vis[c.dataIndex], dp=Math.abs(despesa(x.r)), rp=receita(x.r);
-            return ["Lounge Key: "+rs(-x.v),
-                    pc(tot?x.v/tot:0,1)+" do Lounge Key da cooperativa",
-                    pc(dp?x.v/dp:0,1)+" da despesa do PA",
-                    "Receita do PA: "+rs(rp,0),
-                    "Resultado do PA: "+rs(resultado(x.r),0)];
+            var x=vis[c.dataIndex];
+            return ["Lounge Key: "+rs(-x.v), pc(tot?x.v/tot:0,1)+" do Lounge Key no recorte"];
           }}})},
       scales:{ x:eixoX(abrev), y:eixoY() } }
   });
 
-  var agm=agrega(function(i){return R_m[i]}, NM, true);
-  desenha("c_lkevo",{
-    type:"bar",
-    data:{ labels:MES,
-      datasets:[{ label:"Lounge Key", data:agm.linhas.map(function(r){ return Math.abs(r[I_LOUNGE]); }),
-        backgroundColor:"rgba(125,182,28,.85)", borderRadius:6, borderSkipped:false,
-        barPercentage:.6, categoryPercentage:.85 }]},
-    options:{ maintainAspectRatio:false, responsive:true,
-      plugins:{ legend:{display:false},
-        tooltip:Object.assign({},TOOLTIP,{ callbacks:{
-          title:function(c){ return c[0].label+"/2026" },
-          label:function(c){ return "Lounge Key: "+rs(-c.parsed.y,0) }}})},
-      scales:{ x:{grid:{display:false},border:{display:false},ticks:{color:COR.muted}}, y:eixoX(abrev) } }
-  });
-
-  var cols=[{t:"PA"},{t:"Lounge Key",dest:true},{t:"% do total"},{t:"% da despesa do PA"},
-            {t:"Despesa do PA"},{t:"Receita do PA"},{t:"Resultado do PA"}];
+  /* ---- tabela ---- */
+  var cols=[{t:"PA"},{t:"Lounge Key",dest:true,ajuda:"Despesa de Lounge Key no recorte"},
+            {t:"% do total",ajuda:"Peso do PA na despesa de Lounge Key do recorte"}];
   var linhas=itens.map(function(x){
-    var dp=despesa(x.r), rp=receita(x.r), res=rp+dp;
-    return {raw:[PAS[x.a], x.v, tot?x.v/tot:0, dp?x.v/Math.abs(dp):0, dp, rp, res],
-      cel:[nomePA(x.a), rs(-x.v,0), pc(tot?x.v/tot:0,1), pc(dp?x.v/Math.abs(dp):0,1),
-           rs(dp,0), rs(rp,0), rs(res,0)],
-      cor:["","neg","","","","",cls(res)]};
+    return {raw:[PAS[x.a], x.v, tot?x.v/tot:0],
+      cel:[nomePA(x.a), rs(-x.v,0), pc(tot?x.v/tot:0,1)],
+      cor:["","neg",""]};
   });
   tabela(document.getElementById("t_lk"), cols, linhas, 1,
-    ["Total", rs(-tot,0), "100,0%", pc(des?tot/des:0,1), rs(despesa(t),0), rs(rec,0), rs(resultado(t),0)]);
+    ["Total", rs(-tot,0), "100,0%"]);
 }
 
 
