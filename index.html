@@ -280,7 +280,7 @@ footer{text-align:center;color:var(--muted);font-size:11.5px;margin-top:24px;lin
 .aba.on[data-c="8"]{background:linear-gradient(135deg,#00AE9D,#7DB61C)}
 .bloco[data-c="8"] h3::before{background:linear-gradient(180deg,#00AE9D,#49479D)}
 .mrow.rede{background:rgba(0,174,157,.07);border-color:rgba(0,174,157,.26)}
-.redes{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px;margin-bottom:16px}
+.redes{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px;margin-bottom:16px}
 .rc{position:relative;overflow:hidden;background:linear-gradient(180deg,var(--card2),var(--card));
     border:1px solid var(--line);border-radius:var(--r);padding:16px 18px;transition:transform .2s,border-color .2s}
 .rc:hover{transform:translateY(-3px);border-color:var(--rc)}
@@ -310,6 +310,13 @@ footer{text-align:center;color:var(--muted);font-size:11.5px;margin-top:24px;lin
 .rchip:hover{border-color:var(--line2);color:var(--ink)}
 .rchip.on{background:var(--rc,var(--turq));border-color:transparent;color:#F2FBF9;font-weight:800;
   text-shadow:0 1px 2px rgba(0,0,0,.45);box-shadow:0 0 0 1px rgba(234,246,244,.3)}
+/* v17 — barra de rede/PA no topo da aba e subnível do Lounge Key */
+.rdbar{display:flex;gap:18px;flex-wrap:wrap;align-items:flex-end;margin:0 0 14px;padding:12px 16px;
+  background:linear-gradient(180deg,var(--card2),var(--card));border:1px solid var(--line);border-radius:12px}
+.rdbar .rchips{margin:0}
+.rdbar select{min-width:260px}
+#rd_lkbloco.full{grid-column:1 / -1}
+#rd_lkbloco .gh{white-space:nowrap}
 /* célula sem valor no mês */
 td.zero{color:var(--muted)}
 </style>
@@ -438,6 +445,10 @@ td.zero{color:var(--muted)}
 
   <!-- ================= ABA ANÁLISE POR REDE DE ATENDIMENTO (v15/v16) ================= -->
   <div class="painel" id="rd" hidden>
+    <div class="rdbar">
+      <div class="f"><label>Rede de atendimento</label><div class="rchips" id="rd_chips"></div></div>
+      <div class="f"><label for="rdPA">PA</label><select id="rdPA"></select></div>
+    </div>
     <div id="rd_faixa"></div>
     <div class="redes" id="rd_cards"></div>
     <div class="bloco" data-c="8">
@@ -451,10 +462,15 @@ td.zero{color:var(--muted)}
       <div class="cv" style="height:340px"><canvas id="c_rd"></canvas></div>
     </div>
     <div class="grid2">
-      <div class="bloco" data-c="8">
-        <h3>Qual rede gera mais despesa de Lounge Key</h3>
-        <p class="sub">Despesa de Lounge Key no recorte, da maior para a menor.</p>
-        <div class="cv" style="height:260px"><canvas id="c_rdlk"></canvas></div>
+      <div class="bloco" data-c="8" id="rd_lkbloco">
+        <div class="cabbloco">
+          <div>
+            <h3 id="rd_lktit">Qual rede gera mais despesa de Lounge Key</h3>
+            <p class="sub" id="rd_lksub">—</p>
+          </div>
+          <button class="gh" id="rd_lkvolta" type="button" hidden>← Voltar para as redes</button>
+        </div>
+        <div class="cv" id="cv_rdlk" style="height:260px"><canvas id="c_rdlk"></canvas></div>
       </div>
       <div class="bloco" data-c="8">
         <h3>Contas em atraso por rede</h3>
@@ -477,7 +493,6 @@ td.zero{color:var(--muted)}
           <button data-v="t" type="button">Tabela</button>
         </div>
       </div>
-      <div class="rchips" id="rd_chips"></div>
       <div class="legenda" id="rd_mleg">
         <span><i style="background:#00AE9D"></i>Resultado</span>
         <span><i style="background:#49479D"></i>Cessão de crédito</span>
@@ -1463,7 +1478,7 @@ var NR=REDES.length, I_SEMREDE=NR;
 var SIC={verde:"#003641", turq:"#00AE9D", lima:"#7DB61C", citrico:"#C9D200", roxo:"#49479D"};
 var CORREDE=[SIC.turq, SIC.lima, SIC.citrico, SIC.roxo, SIC.verde];
 var CORFXR=[SIC.citrico, SIC.lima, SIC.turq, SIC.roxo];
-var rdModo="g";
+var rdModo="g", lkDrill=-1;
 function redeDoPA(a){ var r=PAREDE[a]; return r>=0 ? r : I_SEMREDE; }
 function nomeRede(k){ return k===I_SEMREDE ? "Sem rede" : REDES[k].n; }
 function regRede(k){ return k===I_SEMREDE ? "sede, recuperação e PAs fora da planilha de rede" : "Regional "+REDES[k].g; }
@@ -1471,6 +1486,16 @@ function paRede(k){ var n=0; for(var a=0;a<NPA;a++) if(redeDoPA(a)===k) n++; ret
 function corA(hex,al){ var h=hex.replace("#",""); return "rgba("+parseInt(h.substr(0,2),16)+","+parseInt(h.substr(2,2),16)+","+parseInt(h.substr(4,2),16)+","+al+")"; }
 
 function renderRede(){
+  /* ---- barra do topo: rede (chips) + PA — espelham os filtros globais (v17) ---- */
+  document.getElementById("rd_chips").innerHTML=
+    [-1].concat(REDES.map(function(_,k){return k})).concat([I_SEMREDE]).map(function(k){
+      return '<button type="button" class="rchip'+(F.rede===k?' on':'')+'" data-k="'+k+'"'+
+        (k>=0?' style="--rc:'+CORREDE[k]+'"':'')+'>'+(k<0?"Todas as redes":nomeRede(k))+'</button>'; }).join("");
+  Array.prototype.forEach.call(document.querySelectorAll("#rd_chips .rchip"),function(bt){
+    bt.onclick=function(){ F.rede=+bt.dataset.k; lkDrill=-1; document.getElementById("fRede").value=F.rede; atualizaListaPAs(); atualiza(); };
+  });
+  var sp=document.getElementById("rdPA"), fp=document.getElementById("fPA");
+  sp.innerHTML=fp.innerHTML; sp.value=F.pa;
   var ag=agrega(function(i){ return redeDoPA(R_a[i]); }, NR+1, false), t=ag.total;
   var atr=agregaAtr(function(r){ return redeDoPA(r[0]); }, NR+1);
   var riscoCoop=risco(t[I_FAT], t[I_CES]);
@@ -1497,7 +1522,7 @@ function renderRede(){
   cards.innerHTML=itens.map(function(x){
     return '<div class="rc'+(x.k===I_SEMREDE?' sem':'')+'" style="--rc:'+CORREDE[x.k]+'">'+
       '<div class="rt"><i></i>'+nomeRede(x.k)+'</div>'+
-      '<div class="rg">'+regRede(x.k)+' · '+x.npa+' PAs</div>'+
+      '<div class="rg">'+regRede(x.k)+' · '+(x.npa===1?'1 PA':x.npa+' PAs')+'</div>'+
       '<div class="rl">Resultado líquido</div>'+
       '<div class="rv num '+cls(x.liq)+'">'+cheio(x.liq)+'</div>'+
       '<dl>'+
@@ -1545,20 +1570,70 @@ function renderRede(){
       scales:{ x:{grid:{display:false},border:{display:false},ticks:{color:COR.ink2,font:{weight:"600"}}}, y:eixoX(abrev) } }
   });
 
-  /* ---- Lounge Key por rede ---- */
-  var lk=itens.filter(function(x){return x.lk>0}).sort(function(a,b){return b.lk-a.lk});
-  desenha("c_rdlk",{
-    type:"bar",
-    data:{ labels:lk.map(function(x){return nomeRede(x.k)}),
-      datasets:[{ data:lk.map(function(x){return x.lk}), backgroundColor:lk.map(function(x){return CORREDE[x.k]}), borderColor:"rgba(234,246,244,.28)", borderWidth:1,
-        borderRadius:5, borderSkipped:false, barPercentage:.72 }]},
-    options:{ indexAxis:"y", maintainAspectRatio:false, responsive:true,
-      plugins:{ legend:{display:false},
-        tooltip:Object.assign({},TOOLTIP,{ callbacks:{
-          label:function(c){ var x=lk[c.dataIndex]; return ["Lounge Key: "+cheio(x.lk), pc(tLK?x.lk/tLK:0,1)+" do total do recorte",
-            "Média por PA: "+cheio(x.npa?x.lk/x.npa:0)]; }}})},
-      scales:{ x:eixoX(abrev), y:eixoY() } }
-  });
+  /* ---- Lounge Key por rede, com subnível: clique numa rede → PAs dela (v17) ----
+     Com uma rede escolhida no filtro, o gráfico já abre no nível dos PAs. */
+  var dk=(lkDrill>=0) ? lkDrill : (F.rede>=0 ? F.rede : -1);
+  var blk=document.getElementById("rd_lkbloco"), cvl=document.getElementById("cv_rdlk");
+  var btV=document.getElementById("rd_lkvolta");
+  if(dk<0){
+    var lk=itens.filter(function(x){return x.lk>0}).sort(function(a,b){return b.lk-a.lk});
+    blk.classList.remove("full");
+    document.getElementById("rd_lktit").textContent="Qual rede gera mais despesa de Lounge Key";
+    document.getElementById("rd_lksub").innerHTML="Despesa de Lounge Key no recorte, da maior para a menor. <b>Clique numa rede</b> para ver os PAs dela.";
+    btV.hidden=true;
+    cvl.style.height="260px";
+    desenha("c_rdlk",{
+      type:"bar",
+      data:{ labels:lk.map(function(x){return nomeRede(x.k)}),
+        datasets:[{ data:lk.map(function(x){return x.lk}), backgroundColor:lk.map(function(x){return CORREDE[x.k]}), borderColor:"rgba(234,246,244,.28)", borderWidth:1,
+          borderRadius:5, borderSkipped:false, barPercentage:.72 }]},
+      options:{ indexAxis:"y", maintainAspectRatio:false, responsive:true,
+        onHover:function(e,els){ e.chart.canvas.style.cursor=els.length?"pointer":"default"; },
+        onClick:function(e,els,ch){
+          var p=ch.getElementsAtEventForMode(e,"nearest",{intersect:false,axis:"y"},true);
+          if(p.length){ var alvo=lk[p[0].index].k;
+            /* redesenha fora do evento: o Chart.js ainda usa o gráfico depois do clique */
+            setTimeout(function(){ lkDrill=alvo; renderRede(); document.getElementById("rd_lkbloco").scrollIntoView({behavior:"smooth",block:"nearest"}); },0); }
+        },
+        plugins:{ legend:{display:false},
+          tooltip:Object.assign({},TOOLTIP,{ callbacks:{
+            label:function(c){ var x=lk[c.dataIndex]; return ["Lounge Key: "+cheio(x.lk), pc(tLK?x.lk/tLK:0,1)+" do total do recorte",
+              "Média por PA: "+cheio(x.npa?x.lk/x.npa:0)]; },
+            footer:function(){ return "Clique para ver os PAs"; }}})},
+        scales:{ x:eixoX(abrev), y:eixoY() } }
+    });
+  } else {
+    var pas=[], totR=0;
+    for(var a2=0;a2<NPA;a2++){
+      if(redeDoPA(a2)!==dk) continue;
+      var v2=Math.abs(agPA.linhas[a2][I_LOUNGE]);
+      if(v2>0){ pas.push({a:a2, v:v2}); totR+=v2; }
+    }
+    pas.sort(function(x,y){ return y.v-x.v; });
+    blk.classList.add("full");
+    document.getElementById("rd_lktit").textContent="Lounge Key nos PAs da rede "+nomeRede(dk);
+    document.getElementById("rd_lksub").innerHTML=pas.length
+      ? (pas.length===1?"1 PA":pas.length+" PAs")+" com despesa · "+cheio(totR)+" na rede"+
+        (lkDrill>=0 && F.rede<0 ? " · "+pc(tLK?totR/tLK:0,1)+" do Lounge Key da cooperativa" : "")+"."
+      : "Nenhum PA desta rede teve despesa de Lounge Key no recorte.";
+    btV.hidden=(lkDrill<0);
+    cvl.style.height=Math.max(200, pas.length*27+50)+"px";
+    var cor=CORREDE[dk];
+    desenha("c_rdlk",{
+      type:"bar",
+      data:{ labels:pas.map(function(x){return nomePA(x.a)}),
+        datasets:[{ data:pas.map(function(x){return x.v}),
+          backgroundColor:pas.map(function(x,i){ return i===0?cor:corA(cor, Math.max(.35, .9-i*.03)); }),
+          borderColor:"rgba(234,246,244,.28)", borderWidth:1, borderRadius:5, borderSkipped:false, barPercentage:.8 }]},
+      options:{ indexAxis:"y", maintainAspectRatio:false, responsive:true,
+        onHover:function(e){ e.chart.canvas.style.cursor="default"; }, onClick:function(){},
+        plugins:{ legend:{display:false},
+          tooltip:Object.assign({},TOOLTIP,{ callbacks:{
+            label:function(c){ var x=pas[c.dataIndex];
+              return ["Lounge Key: "+cheio(x.v), pc(totR?x.v/totR:0,1)+" da rede "+nomeRede(dk), pc(tLK?x.v/tLK:0,1)+" do total do recorte"]; }}})},
+        scales:{ x:eixoX(abrev), y:eixoY() } }
+    });
+  }
 
   /* ---- contas em atraso por rede (retrato, empilhado pelas faixas) ---- */
   var at=itens.filter(function(x){return x.atq>0});
@@ -1583,14 +1658,7 @@ function renderRede(){
     for(var c=0;c<NREC+NDES;c++) v+=V[c][i];
     o.res+=v; o.ces+=V[I_CES][i]; o.lk+=Math.abs(V[I_LOUNGE][i]);
   }
-  document.getElementById("rd_chips").innerHTML=
-    [-1].concat(REDES.map(function(_,k){return k})).concat([I_SEMREDE]).map(function(k){
-      return '<button type="button" class="rchip'+(F.rede===k?' on':'')+'" data-k="'+k+'"'+
-        (k>=0?' style="--rc:'+CORREDE[k]+'"':'')+'>'+(k<0?"Cooperativa":nomeRede(k))+'</button>'; }).join("");
-  Array.prototype.forEach.call(document.querySelectorAll("#rd_chips .rchip"),function(bt){
-    bt.onclick=function(){ F.rede=+bt.dataset.k; document.getElementById("fRede").value=F.rede; atualizaListaPAs(); atualiza(); };
-  });
-  document.getElementById("rd_msub").textContent=(F.rede>=0?"Rede "+nomeRede(F.rede):"Toda a cooperativa")+
+  document.getElementById("rd_msub").textContent=(F.pa>=0?nomePA(F.pa):(F.rede>=0?"Rede "+nomeRede(F.rede):"Toda a cooperativa"))+
     " · no recorte de PA, bandeira, grupo e produto — o filtro de período não se aplica.";
   var modoT=(rdModo==="t");
   document.getElementById("cv_rdm").hidden=modoT;
@@ -1717,13 +1785,13 @@ function atualizaListaProdutos(){
   if(lista.some(function(x){return x.i===atual})) sel.value=atual; else { F.prod=-1; sel.value=-1; }
 }
 
-document.getElementById("fRede").onchange=function(){ F.rede=+this.value; atualizaListaPAs(); atualiza(); };
+document.getElementById("fRede").onchange=function(){ F.rede=+this.value; lkDrill=-1; atualizaListaPAs(); atualiza(); };
 document.getElementById("fPA").onchange=function(){ F.pa=+this.value; atualiza(); };
 document.getElementById("fBand").onchange=function(){ F.band=+this.value; atualizaListaProdutos(); atualiza(); };
 document.getElementById("fGrupo").onchange=function(){ F.grupo=this.value; atualizaListaProdutos(); atualiza(); };
 document.getElementById("fProd").onchange=function(){ F.prod=+this.value; atualiza(); };
 document.getElementById("btnLimpar").onclick=function(){
-  F={mes:-1,rede:-1,pa:-1,band:-1,grupo:"",prod:-1};
+  F={mes:-1,rede:-1,pa:-1,band:-1,grupo:"",prod:-1}; lkDrill=-1;
   var m=document.getElementById("fMeses");
   Array.prototype.forEach.call(m.querySelectorAll(".mchip"),function(x){x.classList.remove("on")});
   m.querySelector('.mchip[data-m="-1"]').classList.add("on");
@@ -1756,6 +1824,8 @@ Array.prototype.forEach.call(document.querySelectorAll("#rd_seg button"),functio
     b.classList.add("on"); rdModo=b.dataset.v; renderRede();
   };
 });
+document.getElementById("rdPA").onchange=function(){ F.pa=+this.value; document.getElementById("fPA").value=F.pa; atualiza(); };
+document.getElementById("rd_lkvolta").onclick=function(){ lkDrill=-1; renderRede(); };
 document.getElementById("sProd").onchange=function(){ simSel=+this.value; renderSim(); };
 document.getElementById("sAnu").oninput=function(){ (simEdit[simSel]=simEdit[simSel]||{}).anu=parseFloat(this.value)||0; renderSim(); };
 document.getElementById("sPar").oninput=function(){ (simEdit[simSel]=simEdit[simSel]||{}).par=Math.max(1,parseInt(this.value)||1); renderSim(); };
