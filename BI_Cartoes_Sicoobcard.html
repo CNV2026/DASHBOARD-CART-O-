@@ -271,6 +271,9 @@ footer{text-align:center;color:var(--muted);font-size:11.5px;margin-top:24px;lin
 .cardart:hover{opacity:1;transform:translateY(-2px)}
 .cardart svg{display:block;filter:drop-shadow(0 10px 20px rgba(0,0,0,.45))}
 @media (max-width:1240px){ .cardart{display:none} }
+
+/* célula sem valor no mês */
+td.zero{color:var(--muted)}
 </style>
 </head>
 <body>
@@ -463,8 +466,9 @@ footer{text-align:center;color:var(--muted);font-size:11.5px;margin-top:24px;lin
       <div class="cv" id="cv_lk" style="height:520px"><canvas id="c_lk"></canvas></div>
     </div>
     <div class="bloco" data-c="5">
-      <h3>Lounge Key por PA</h3>
-      <p class="sub">Clique no cabeçalho para reordenar.</p>
+      <h3>Lounge Key por PA e mês</h3>
+      <p class="sub">Gasto de cada PA mês a mês, do maior para o menor total. Clique no cabeçalho
+        para reordenar — inclusive por um mês específico.</p>
       <div class="tbl-wrap" style="max-height:620px;overflow-y:auto"><table id="t_lk"></table></div>
     </div>
   </div>
@@ -1142,16 +1146,39 @@ function renderLK(){
       scales:{ x:eixoX(abrev), y:eixoY() } }
   });
 
-  /* ---- tabela ---- */
-  var cols=[{t:"PA"},{t:"Lounge Key",dest:true,ajuda:"Despesa de Lounge Key no recorte"},
-            {t:"% do total",ajuda:"Peso do PA na despesa de Lounge Key do recorte"}];
+  /* ---- tabela: uma coluna por mês + total, do maior para o menor ----
+     A agregação por PA × mês ignora o filtro de período (as colunas
+     exibidas já são o recorte): com um mês escolhido só aquela coluna
+     aparece, e o Total fecha com ela. Valores em módulo, como na faixa. */
+  var mesesVis=(F.mes>=0) ? [F.mes] : MES.map(function(_,i){ return i; });
+  var pm=[]; for(var a=0;a<NPA;a++) pm.push(new Float64Array(NM));
+  var tm=new Float64Array(NM);
+  for(var i=0;i<N;i++){
+    if(!passa(i,true)) continue;
+    var v=Math.abs(V[I_LOUNGE][i]);
+    if(!v) continue;
+    pm[R_a[i]][R_m[i]]+=v; tm[R_m[i]]+=v;
+  }
+
+  var cols=[{t:"PA"}];
+  mesesVis.forEach(function(m){ cols.push({t:MES[m], ajuda:"Despesa de Lounge Key em "+MES[m]+"/2026"}); });
+  cols.push({t:"Total", dest:true, ajuda:"Soma dos meses do recorte"});
+  cols.push({t:"% do total", ajuda:"Peso do PA na despesa de Lounge Key do recorte"});
+
   var linhas=itens.map(function(x){
-    return {raw:[PAS[x.a], x.v, tot?x.v/tot:0],
-      cel:[nomePA(x.a), rs(-x.v,0), pc(tot?x.v/tot:0,1)],
-      cor:["","neg",""]};
+    var raw=[PAS[x.a]], cel=[nomePA(x.a)], cor=[""];
+    mesesVis.forEach(function(m){
+      var v=pm[x.a][m];
+      raw.push(v); cel.push(v?rs(v,0):"—"); cor.push(v?"":"zero");
+    });
+    raw.push(x.v);            cel.push(rs(x.v,0));                 cor.push("neg");
+    raw.push(tot?x.v/tot:0);  cel.push(pc(tot?x.v/tot:0,1));       cor.push("");
+    return {raw:raw, cel:cel, cor:cor};
   });
-  tabela(document.getElementById("t_lk"), cols, linhas, 1,
-    ["Total", rs(-tot,0), "100,0%"]);
+  var rod=["Total"];
+  mesesVis.forEach(function(m){ rod.push(rs(tm[m],0)); });
+  rod.push(rs(tot,0)); rod.push("100,0%");
+  tabela(document.getElementById("t_lk"), cols, linhas, mesesVis.length+1, rod);
 }
 
 
