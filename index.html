@@ -317,6 +317,39 @@ footer{text-align:center;color:var(--muted);font-size:11.5px;margin-top:24px;lin
 .rdbar select{min-width:260px}
 #rd_lkbloco.full{grid-column:1 / -1}
 #rd_lkbloco .gh{white-space:nowrap}
+/* ================= SIMULADOR — salas VIP (v18) ================= */
+.sdup{display:grid;grid-template-columns:1fr 96px;gap:10px}
+.sread{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin:-2px 0 14px;
+  padding:10px 12px;border-radius:10px;background:rgba(0,174,157,.08);border:1px solid rgba(0,174,157,.22)}
+.sread small{display:block;font-size:11px;color:var(--ink2);margin-top:2px}
+.sread b{font-size:20px}
+.sread span{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);font-weight:700}
+.sread b{color:var(--ink);white-space:nowrap}
+.svip{margin:0 0 14px;padding:12px 12px 10px;border-radius:12px;
+  background:linear-gradient(135deg,rgba(73,71,157,.22),rgba(0,54,65,.25));border:1px solid rgba(123,121,214,.38)}
+.svip .f{margin-bottom:8px}
+.svt{display:flex;align-items:center;gap:8px;font-weight:800;font-size:13.5px;margin-bottom:10px}
+.stag{font-size:9.5px;letter-spacing:.8px;text-transform:uppercase;font-weight:800;padding:3px 8px;border-radius:999px;
+  background:#C9D200;color:#1C2400}
+.svchips{display:flex;gap:5px;flex-wrap:wrap}
+.svc{font:inherit;font-size:12px;font-weight:700;min-width:30px;padding:5px 7px;border-radius:8px;cursor:pointer;
+  border:1px solid var(--line);background:rgba(255,255,255,.04);color:var(--ink2);transition:all .15s}
+.svc:hover{border-color:var(--line2);color:var(--ink)}
+.svc.on{background:#49479D;border-color:rgba(234,246,244,.35);color:#fff}
+.svc.limpa{font-weight:600;color:var(--muted)}
+.sres{margin:0 0 14px;padding:16px 16px 12px}
+.sres .v{font-size:30px;letter-spacing:-1px}
+.sconta{margin-top:12px;border-top:1px solid rgba(160,220,215,.16);padding-top:8px}
+.sl{display:flex;justify-content:space-between;gap:8px;font-size:12px;color:var(--ink2);padding:3px 0}
+.sl b{color:var(--ink);white-space:nowrap}
+.sl.tot{border-top:1px dashed rgba(160,220,215,.22);margin-top:3px;padding-top:6px}
+.sl.tot span,.sl.tot b{color:#C9D200;font-weight:800}
+.tag.vip{background:rgba(201,210,0,.16);color:#D8E04A}
+.simgrid{grid-template-columns:350px minmax(0,1fr)}
+td .zero{color:var(--muted)}
+.scod{font-size:10.5px;color:var(--muted);font-weight:400;margin-top:1px}
+#t_sim td{vertical-align:middle}
+@media (max-width:1440px){ .simgrid{grid-template-columns:318px minmax(0,1fr)} #t_sim{font-size:11.3px} #t_sim th,#t_sim td{padding-left:6px;padding-right:6px} #t_sim th{letter-spacing:.3px} }
 /* célula sem valor no mês */
 td.zero{color:var(--muted)}
 </style>
@@ -590,19 +623,30 @@ td.zero{color:var(--muted)}
   <div class="painel" id="sm" hidden>
     <div class="simgrid">
       <div class="bloco simcard">
-        <h3>Ajustar um produto</h3>
-        <p class="sub">Escolha o produto e edite anuidade, parcelas ou percentual: a linha dele recalcula
-          e fica destacada na tabela ao lado.</p>
+        <h3>Simular um produto</h3>
+        <p class="sub">Escolha o produto: a anuidade do mês e o % de intercâmbio já vêm preenchidos.
+          Nos cartões de alta renda, informe quantas salas VIP o associado usa por mês.</p>
         <div class="f"><label for="sProd">Produto</label><select id="sProd"></select></div>
-        <div class="f"><label for="sAnu">Anuidade do titular (R$/ano)</label><input type="number" id="sAnu" step="0.01"></div>
-        <div class="f"><label for="sPar">Parcelas da anuidade</label><input type="number" id="sPar" step="1" min="1"></div>
+        <div class="sdup">
+          <div class="f"><label for="sAnu">Anuidade (R$/ano)</label><input type="number" id="sAnu" step="0.01"></div>
+          <div class="f"><label for="sPar">Parcelas</label><input type="number" id="sPar" step="1" min="1"></div>
+        </div>
+        <div class="sread"><div><span>Anuidade do mês</span><small id="sMesSub"></small></div><b class="num" id="sMes">—</b></div>
         <div class="f"><label for="sPct">% de intercâmbio</label><input type="number" id="sPct" step="0.001"></div>
+        <div class="svip" id="sVipBox" hidden>
+          <div class="svt"><span class="stag">Alta renda</span>Salas VIP</div>
+          <div class="f"><label for="sVip">Quantas salas VIP por mês</label>
+            <input type="number" id="sVip" min="0" step="1" placeholder="Digite a quantidade"></div>
+          <div class="svchips" id="sVipChips"></div>
+          <p class="sub" style="margin:6px 0 0">Valor fixo por acesso: <b id="sVipUn">—</b></p>
+        </div>
+        <div class="resbox sres" id="sRes"></div>
         <button class="gh" id="sReset" type="button" style="width:100%">Voltar ao realizado da base</button>
         <p class="sub" style="margin:12px 0 0" id="sOrigem">—</p>
       </div>
       <div>
         <div class="bloco">
-          <h3>Quanto o associado precisa faturar para cobrir a anuidade</h3>
+          <h3>Quanto o associado precisa faturar para cobrir a anuidade e as salas VIP</h3>
           <p class="sub" id="s_ref">—</p>
           <div class="tbl-wrap" style="max-height:520px;overflow-y:auto"><table id="t_sim"></table></div>
         </div>
@@ -1136,6 +1180,9 @@ function renderLinhas(){
    10. ABA — SIMULADOR DE ANUIDADE
    =========================================================== */
 var simSel=-1, simEdit={};
+/* sala VIP: valor fixo por acesso e produtos de alta renda (Black, Infinite, Merit, Zenith) */
+var VIP_ACESSO=187.15;
+function altaRenda(p){ return /Black|Infinite|Merit|Zenith/i.test(PROD[p].n); }
 function pctProduto(pIdx){
   var inter=0, fat=0;
   for(var i=0;i<N;i++){
@@ -1156,42 +1203,87 @@ function renderSim(){
     ANU.forEach(function(a,k){ if(fatp[a.p]>mf){ mf=fatp[a.p]; melhor=k; } });
     simSel=melhor;
     ANU.forEach(function(a,k){
-      var o=document.createElement("option"); o.value=k; o.textContent=PROD[a.p].n+"  ("+a.cod+")";
+      var o=document.createElement("option"); o.value=k;
+      o.textContent=PROD[a.p].n+"  ("+a.cod+")"+(altaRenda(a.p)?"  · alta renda":"");
       sel.appendChild(o);
     });
     sel.value=simSel;
   }
   document.getElementById("s_ref").innerHTML=
-    "Anuidade ÷ % de intercâmbio. Percentual apurado em "+ctx()+" · anuidades vigentes na referência "+REFANU+".";
+    "(Anuidade do mês + salas VIP) ÷ % de intercâmbio. Percentual apurado em "+ctx()+
+    " · anuidades vigentes na referência "+REFANU+" · sala VIP a "+rs(VIP_ACESSO,2)+" por acesso, só nos cartões de alta renda.";
 
-  var a=ANU[simSel], base=pctProduto(a.p), e=simEdit[simSel]||{};
-  var anuVal=(e.anu!==undefined)?e.anu:a.vt;
-  var par=(e.par!==undefined)?e.par:(a.par||12);
-  var pct=(e.pct!==undefined)?e.pct/100:base.pct;
-  document.getElementById("sAnu").value=anuVal;
-  document.getElementById("sPar").value=par;
-  document.getElementById("sPct").value=(pct*100).toFixed(3);
-  document.getElementById("sOrigem").innerHTML = base.fat>0
-    ? "Realizado em "+ctx()+": intercâmbio no crédito "+rs(base.inter,0)+" ÷ faturamento "+rs(base.fat,0)+" = <b>"+pc(base.pct,3)+"</b>."
-    : '<span class="aviso">Este produto não teve faturamento em '+ctx()+'. Ajuste o percentual à mão ou troque o filtro.</span>';
-
-  var cols=[{t:"Produto"},{t:"Código"},{t:"Anuidade/ano"},{t:"Parcelas"},{t:"Parcela/mês"},
-            {t:"% intercâmbio"},{t:"Faturar/mês",dest:true},{t:"Faturar/ano"}];
-  var linhas=ANU.map(function(x,ix){
-    var b=pctProduto(x.p), ed=simEdit[ix]||{};
+  /* cálculo de um produto do ANU: anuidade, parcela, %, salas VIP e quanto faturar */
+  function calc(ix){
+    var x=ANU[ix], b=pctProduto(x.p), ed=simEdit[ix]||{};
     var vt=(ed.anu!==undefined)?ed.anu:x.vt;
     var pr=(ed.par!==undefined)?ed.par:(x.par||12);
     var pt=(ed.pct!==undefined)?ed.pct/100:b.pct;
-    var mm=pr>0?vt/pr:vt;
-    var fm=pt>0?mm/pt:0, fa=pt>0?vt/pt:0;
-    var sel=(ix===simSel), mark=sel?" ◂":"", edit=(ed.anu!==undefined||ed.par!==undefined||ed.pct!==undefined);
-    return {raw:[PROD[x.p].n, x.cod, vt, pr, mm, pt, fm, fa],
-      cel:[(sel?"<b>":"")+PROD[x.p].n+(edit?' <span class="tag rec">editado</span>':"")+(sel?"</b>":"")+mark,
-           x.cod, rs(vt,2), pr?nf(pr,0)+"x":"—", rs(mm,2),
-           pt>0?pc(pt,3):"sem faturamento", pt>0?rs(fm,0):"—", pt>0?rs(fa,0):"—"],
-      cor:sel?["selrow","selrow","selrow","selrow","selrow","selrow","selrow","selrow"]:null};
+    var ar=altaRenda(x.p);
+    var nv=(ar && ed.vip!==undefined)?ed.vip:0;
+    var mm=pr>0?vt/pr:vt, vip=nv*VIP_ACESSO, cm=mm+vip;
+    return {x:x, b:b, ed:ed, vt:vt, pr:pr, pt:pt, ar:ar, nv:nv, mm:mm, vip:vip, cm:cm,
+            fm:pt>0?cm/pt:0, fa:pt>0?(vt+vip*12)/pt:0,
+            edit:(ed.anu!==undefined||ed.par!==undefined||ed.pct!==undefined)};
+  }
+
+  /* ---- lateral ---- */
+  var s=calc(simSel);
+  document.getElementById("sAnu").value=s.vt;
+  document.getElementById("sPar").value=s.pr;
+  document.getElementById("sPct").value=(s.pt*100).toFixed(3);
+  document.getElementById("sMes").textContent=rs(s.mm,2);
+  document.getElementById("sMesSub").textContent=s.pr>1?rs(s.vt,2)+" ÷ "+s.pr+" parcelas":"parcela única";
+
+  var box=document.getElementById("sVipBox"), inp=document.getElementById("sVip");
+  box.hidden=!s.ar;
+  document.getElementById("sVipUn").textContent=rs(VIP_ACESSO,2);
+  if(s.ar){
+    if(document.activeElement!==inp) inp.value=(s.ed.vip!==undefined)?s.ed.vip:"";
+    var ch=document.getElementById("sVipChips");
+    ch.innerHTML=[1,2,3,4,5,6].map(function(n){
+      return '<button type="button" class="svc'+(s.ed.vip===n?' on':'')+'" data-n="'+n+'">'+n+'</button>'; }).join("")+
+      (s.ed.vip!==undefined?'<button type="button" class="svc limpa" data-n="">limpar</button>':'');
+    Array.prototype.forEach.call(ch.querySelectorAll(".svc"),function(bt){
+      bt.onclick=function(){
+        var e=(simEdit[simSel]=simEdit[simSel]||{});
+        if(bt.dataset.n===""){ delete e.vip; inp.value=""; } else { e.vip=+bt.dataset.n; inp.value=e.vip; }
+        renderSim();
+      };
+    });
+  }
+
+  var r=document.getElementById("sRes");
+  var linhas='<div class="sl"><span>Anuidade do mês</span><b class="num">'+rs(s.mm,2)+'</b></div>';
+  if(s.ar) linhas+='<div class="sl"><span>Salas VIP · '+(s.nv?s.nv+' × '+rs(VIP_ACESSO,2):'nenhuma informada')+'</span><b class="num">'+rs(s.vip,2)+'</b></div>';
+  linhas+='<div class="sl tot"><span>Custo do mês a cobrir</span><b class="num">'+rs(s.cm,2)+'</b></div>'+
+          '<div class="sl"><span>÷ % de intercâmbio</span><b class="num">'+(s.pt>0?pc(s.pt,3):'—')+'</b></div>';
+  r.innerHTML='<div class="t">Precisa faturar por mês</div>'+
+    '<div class="v num">'+(s.pt>0?rs(s.fm,2):'—')+'</div>'+
+    '<div class="s">'+(s.pt>0?'No ano: '+rs(s.fa,2)+(s.vip?' (anuidade + 12 meses de salas VIP)':''):'Sem % de intercâmbio: informe o percentual acima.')+'</div>'+
+    '<div class="sconta">'+linhas+'</div>';
+
+  document.getElementById("sOrigem").innerHTML = s.b.fat>0
+    ? "Realizado em "+ctx()+": intercâmbio no crédito "+rs(s.b.inter,0)+" ÷ faturamento "+rs(s.b.fat,0)+" = <b>"+pc(s.b.pct,3)+"</b>."
+    : '<span class="aviso">Este produto não teve faturamento em '+ctx()+'. Ajuste o percentual à mão ou troque o filtro.</span>';
+
+  /* ---- tabela ---- */
+  var cols=[{t:"Produto",ajuda:"Produto e código da anuidade"},{t:"Anuidade/ano"},
+            {t:"Parcela/mês",ajuda:"Anuidade ÷ parcelas"},
+            {t:"Salas VIP/mês",ajuda:"Só cartões de alta renda: quantidade informada × "+rs(VIP_ACESSO,2)},
+            {t:"% intercâmbio"},{t:"Faturar/mês",dest:true,ajuda:"(Parcela do mês + salas VIP) ÷ % de intercâmbio"},
+            {t:"Faturar/ano",ajuda:"(Anuidade + 12 meses de salas VIP) ÷ % de intercâmbio"}];
+  var linhasT=ANU.map(function(_,ix){
+    var c=calc(ix), marcado=(ix===simSel);
+    var vipTxt=!c.ar?'<span class="zero">—</span>':(c.nv?c.nv+' × '+rs(c.vip,2):'<span class="zero">não informado</span>');
+    return {raw:[PROD[c.x.p].n, c.vt, c.mm, c.vip, c.pt, c.fm, c.fa],
+      cel:[(marcado?"<b>":"")+PROD[c.x.p].n+(marcado?"</b> ◂":"")+(c.ar?' <span class="tag vip">VIP</span>':'')+
+           (c.edit?' <span class="tag rec">editado</span>':"")+'<div class="scod">'+c.x.cod+'</div>',
+           rs(c.vt,2), rs(c.mm,2)+(c.pr!==12?' <span class="zero">('+nf(c.pr,0)+'x)</span>':''), vipTxt,
+           c.pt>0?pc(c.pt,3):"sem faturamento", c.pt>0?rs(c.fm,0):"—", c.pt>0?rs(c.fa,0):"—"],
+      cor:marcado?["selrow","selrow","selrow","selrow","selrow","selrow","selrow"]:null};
   });
-  tabela(document.getElementById("t_sim"),cols,linhas,6);
+  tabela(document.getElementById("t_sim"),cols,linhasT,5);
 }
 
 
@@ -1830,7 +1922,13 @@ document.getElementById("sProd").onchange=function(){ simSel=+this.value; render
 document.getElementById("sAnu").oninput=function(){ (simEdit[simSel]=simEdit[simSel]||{}).anu=parseFloat(this.value)||0; renderSim(); };
 document.getElementById("sPar").oninput=function(){ (simEdit[simSel]=simEdit[simSel]||{}).par=Math.max(1,parseInt(this.value)||1); renderSim(); };
 document.getElementById("sPct").oninput=function(){ (simEdit[simSel]=simEdit[simSel]||{}).pct=parseFloat(this.value)||0; renderSim(); };
-document.getElementById("sReset").onclick=function(){ delete simEdit[simSel]; renderSim(); };
+/* voltar ao realizado limpa anuidade, parcelas e % — a quantidade de salas VIP é cenário e fica */
+document.getElementById("sReset").onclick=function(){ var e=simEdit[simSel]||{}; simEdit[simSel]=(e.vip!==undefined)?{vip:e.vip}:{}; renderSim(); };
+document.getElementById("sVip").oninput=function(){
+  var e=(simEdit[simSel]=simEdit[simSel]||{});
+  if(this.value===""){ delete e.vip; } else { e.vip=Math.max(0,parseInt(this.value)||0); }
+  renderSim();
+};
 
 (function(){
   var c=document.getElementById("chipRel");
